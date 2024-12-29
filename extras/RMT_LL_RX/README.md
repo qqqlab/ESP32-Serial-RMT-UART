@@ -1,0 +1,1 @@
+This folder contains the different development stages (mostly as single file .ino) of SerialRMT-RX based on RMT_LL, which might be of use for other RMT projects.
