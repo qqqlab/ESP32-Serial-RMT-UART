@@ -189,7 +189,7 @@ bool Rmt_rx_uart::begin(uint32_t baud, uint32_t gpio_num, int channel) {
   uint8_t div = qqq_rmt_calc_best_div(baud, idle_timeout_bits, &bit_duration);
 
   //setup for UART receiver 
-  rmt_ll_set_group_clock_src(&RMT, channel, RMT_CLK_SRC_APB, 1, 1, 0); //set source clk = APB div 1
+  rmt_ll_set_group_clock_src(&RMT, channel, QQQ_RMT_CLK_SRC, 1, 1, 0); //set source clk = APB div 1
   rmt_ll_rx_set_channel_clock_div(&RMT, channel, div); //set clock divider
   rmt_ll_rx_reset_pointer(&RMT, channel); //Reset RMT reading pointer for TX channel
   rmt_ll_rx_set_mem_blocks(&RMT, channel, 1); //block size = SOC_RMT_MEM_WORDS_PER_CHANNEL = 48 (newer chips ESP32S3/ESP32C6) or 64 (older chips ESP32/ESP32S2), one word is two pulses)
