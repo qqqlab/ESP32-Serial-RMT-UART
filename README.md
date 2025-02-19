@@ -66,13 +66,13 @@ The RMT transmitter sends out pulses, and has a buffer for 96 high or low pulses
 
 ### RMT UART Receiver
 
-The RMT receiver stores the duration and high/low level of up to 96 received UART pulses in a buffer. When the buffer is half full or full a threshold interrupt is generated, and the pulses in the upper of lower half of the buffer are decoded. Also, the buffer wraps around to the start, to allow for continuous operation. But unfortunately the RMT receiver stops after a certain timeout, which makes it basically useless as an UART. This timeout generates the end interrupt, which is used to quickly restart the RMT receiver. It turns out however, that no pulses are lost, because the RMT receiver still counts the current pulse during the "stopped" period, and thus the correct pulse duration will be written to the buffer after restart.
+The RMT receiver stores the duration and high/low level of up to 96 received UART pulses in a buffer. When the buffer is half full or full a threshold interrupt is generated, and the pulses in the upper or lower half of the buffer are decoded. Also, the buffer wraps around to the start, to allow for continuous operation. But unfortunately the RMT receiver stops after a certain timeout, which would make it basically useless as an UART. This timeout generates the end interrupt, which is used to quickly restart the RMT receiver. As it turns out however, that no pulses are lost, because the RMT receiver still counts the current pulse during the "stopped" period, and thus the correct pulse duration will be written to the buffer after restart.
 
 ## Hardware Details
 
 The Remote Control Peripheral (RMT) is a pulse capture/sending unit.
 
-This project uses the RMT_LL (RTM low level) interface of ESP-IDF version 5.0. For later or earlier ESP-IDF version some adaptions are required, as the RMT_LL interface changes with each ESP-IDF version.
+This project uses the RMT_LL (RTM low level) interface of ESP-IDF version 5.0. For later or earlier ESP-IDF version some adaptions are required, as the RMT_LL interface changes with each ESP-IDF version. Adaptions might be needed for other targets than the tested ESP32-S3, as the RMT_LL interface uses different #define constants.
 
 Two hardware RMT versions exist. The RMT version 1 receiver always stops after filling the receive buffer. The newer RMT version 2 receiver has SOC_RMT_SUPPORT_RX_PINGPONG capability, which means that the receive buffer can wrap around to the start. So, only the newer version allows continuous operation needed for UART RX. 
 
