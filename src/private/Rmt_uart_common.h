@@ -27,6 +27,16 @@ SOFTWARE.
 #include "Rmt_tx_uart.h"
 #include <hal/rmt_ll.h> //RMT low level
 
+//Target specific defines
+#if CONFIG_IDF_TARGET_ESP32C6
+  #define QQQ_RMT_CLK_SRC RMT_CLK_SRC_DEFAULT
+  #define QQQ_SOC_MOD_CLK SOC_MOD_CLK_PLL_F80M
+#else
+  //works for ESP32-S3, others not tested
+  #define QQQ_RMT_CLK_SRC RMT_CLK_SRC_APB
+  #define QQQ_SOC_MOD_CLK SOC_MOD_CLK_APB
+#endif
+
 bool qqq_rmt_rx_setup(Rmt_rx_uart* rx_instance, int *channel);
 bool qqq_rmt_tx_setup(Rmt_tx_uart* tx_instance, int *channel);
 uint8_t qqq_rmt_calc_best_div(uint32_t baud, int bits_to_fit, uint16_t *bit_duration);
