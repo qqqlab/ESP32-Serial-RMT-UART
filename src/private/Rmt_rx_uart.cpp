@@ -95,9 +95,6 @@ IRAM_ATTR void Rmt_rx_uart::rx_decode_symbol_block(uint32_t* symbols, size_t siz
   }
 }
 
-
-
-
 IRAM_ATTR void Rmt_rx_uart::rx_decode_symbol(uint16_t duration, uint8_t level) {
   //decoder_state:
   //0   = waiting for high
@@ -111,7 +108,7 @@ IRAM_ATTR void Rmt_rx_uart::rx_decode_symbol(uint16_t duration, uint8_t level) {
     number_of_bits = 9;
   } else {
     number_of_bits = (duration + (bit_duration / 2)) / bit_duration; //rounded number of bits
-    if(number_of_bits == 9) number_of_bits = 1; //round short pulses to 1 bit
+    if(number_of_bits == 0) number_of_bits = 1; //round short pulses to 1 bit
     if(number_of_bits > 9) number_of_bits = 9;
   }
 
