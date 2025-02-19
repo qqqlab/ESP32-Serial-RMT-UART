@@ -131,7 +131,7 @@ bool qqq_rmt_tx_setup(Rmt_tx_uart* tx_instance, int *channel) {
 // div >= bits_to_fit * clk / baud / 32767;
 uint8_t qqq_rmt_calc_best_div(uint32_t baud, int bits_to_fit, uint16_t *bit_duration) {
   uint32_t apb_hz;
-  esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_APB, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &apb_hz);
+  esp_clk_tree_src_get_freq_hz(QQQ_SOC_MOD_CLK, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &apb_hz);
   uint32_t div = apb_hz / baud * bits_to_fit / 32767 + 1;
   if(div>255) div = 255; //limit to 8 bits
   *bit_duration = (apb_hz / div + baud/2) / baud;
