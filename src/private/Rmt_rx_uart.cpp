@@ -171,6 +171,11 @@ IRAM_ATTR void Rmt_rx_uart::rx_start() {
   mem_off = 0;
   rmt_ll_rx_set_mem_owner(&RMT, channel, RMT_LL_MEM_OWNER_HW); //Set RMT memory owner for RX channel
   rmt_ll_rx_reset_pointer(&RMT, channel); //Reset RMT reading pointer for RX channel
+  if (gpio_get_level((gpio_num_t)gpio_num)) {
+    decoder_state = 1; //gpio is high, so rx_decoder state is waiting for low start bit
+  }else{
+    decoder_state = 0; //gpio is low, so rx_decoder state is waiting for high level
+  }
   rmt_ll_rx_enable(&RMT, channel, true); //re-enable receiver. NOTE: currently ongoing pulse will be captured as first pulse
 }
 
@@ -182,7 +187,6 @@ bool Rmt_rx_uart::begin(uint32_t baud, uint32_t gpio_num, int channel) {
   this->channel = channel;
   rx_data.begin(rx_data_buffer, sizeof(rx_data_buffer));
   rmtmem = &RMTMEM.channels[channel + QQQ_RX_CHANNEL_LL_TO_DATASHEET_OFFSET].symbols[0].val; //RTM RAM memory pointer
-  decoder_state = 0; //rx_decoder state is waitng for high level
 
   //calculate best divisor fitting idle_timeout_bits uarts bits in a symbol duration for idle detection, and bit_duration
   if(idle_timeout_bits < 20) idle_timeout_bits = 20;
