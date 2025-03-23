@@ -35,32 +35,45 @@ void setup() {
     SerialRMT0.begin(BAUD, -1, RMT_TX_PIN); //baud, rxPin, txPin
   }
   Serial.printf("-------------------------------------------------------------\n");
+
+  //clear Serial1 receive buffer
+  while(Serial1.available()) Serial1.read();
 }
 
-int cnt = 0;
+int cnt = 0;  
+int txerr = 0;
+int rxerr = 0;
 
 void loop() {
-  uint8_t buf[100];
-  int len;
+  char txbuf[100];
+  char rxbuf[100];
+  int txlen;
+  int rxlen;
+
   cnt++;
 
   //RMT_TX --> Serial1_RX
-  SerialRMT0.printf("RMT_TX-%d-abcdefghijklmnopqrstuvwxyz+1234567890+",cnt);
+  txlen = sprintf(txbuf, "RMT_TX-%d-abcdefghijklmnopqrstuvwxyz+1234567890+", cnt);
+  SerialRMT0.write(txbuf, txlen);
   delay(100); //delay to get message transmitted (can remove this but then reception will not be in sync of course)
-  len = Serial1.read(buf, sizeof(buf));
-  Serial.printf(" 0x%02X ",buf[0]);
-  Serial.printf("RMT_TX(%2d) -> Ser1_RX(%2d): len=%d ", RMT_TX_PIN, SER_RX_PIN, len);
-  Serial.write(buf,len);
+  rxlen = Serial1.read(rxbuf, sizeof(rxbuf)-1);
+  rxbuf[rxlen] = 0;
+  if(strcmp(txbuf, rxbuf) != 0) txerr++;
+  Serial.printf("RMT_TX(%2d) -> Ser1_RX(%2d): txerr=%d txlen=%d ", RMT_TX_PIN, SER_RX_PIN, txerr, txlen);
+  Serial.write(rxbuf,rxlen);
   Serial.println();
 
   if(SerialRMT::rxCount() > 0) {
     //Serial1_TX --> RMT_RX
-    Serial1.printf("RMT_RX-%d-ABCDEFGHIJKLMNOPQRSTUVWXYZ+1234567890+",cnt);
+    txlen = sprintf(txbuf, "RMT_RX-%d-ABCDEFGHIJKLMNOPQRSTUVWXYZ+1234567890+", cnt);
+    Serial1.write(txbuf, txlen);
     delay(100); //delay to get message transmitted (can remove this but then reception will not be in sync of course)
-    len = SerialRMT0.read(buf, sizeof(buf));
-    Serial.printf(" 0x%02X ",buf[0]);    
-    Serial.printf("RMT_RX(%2d) <- Ser1_TX(%2d): len=%d ", RMT_RX_PIN, SER_TX_PIN, len);
-    Serial.write(buf,len);
+    rxlen = SerialRMT0.read((uint8_t*)rxbuf, sizeof(rxbuf)-1);
+    rxbuf[rxlen] = 0;
+    if(strcmp(txbuf, rxbuf) != 0) rxerr++;
+    Serial.printf("RMT_RX(%2d) <- Ser1_TX(%2d): rxerr=%d rxlen=%d ", RMT_RX_PIN, SER_TX_PIN, rxerr, rxlen);
+    Serial.write(rxbuf, rxlen);
     Serial.println();
   }
+
 }
