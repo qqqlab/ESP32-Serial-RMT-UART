@@ -31,7 +31,7 @@ class Rmt_rx_uart {
 public:
   uint8_t idle_timeout_bits = 40; //timeout after this many uart bits, set before calling begin()
 
-  bool begin(uint32_t baud, uint32_t gpio_num, int channel = -1); //channel default -1 assigns next available channel
+  bool begin(uint32_t baud, int gpio_num, int channel = -1); //channel default -1 assigns next available channel
   size_t read(uint8_t *buffer, size_t size);
   int available(void);
   int peek(uint16_t offset);

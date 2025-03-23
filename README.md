@@ -1,5 +1,9 @@
 # ESP32-Serial-RMT-UART
 
+<p align="center">&star;&nbsp;&star;&nbsp;&star;&nbsp;</p>
+<p align="center">If you like this project, please give it a &star; star!</p>
+<p align="center">&star;&nbsp;&star;&nbsp;&star;&nbsp;</p>
+
 Additional hardware serial ports for ESP32 family. This is a hardware UART based on the RMT peripheral. It is a drop-in replacement for standard ESP32 Arduino Serial class.
 
 ## Supported Chips

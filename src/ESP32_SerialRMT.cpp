@@ -23,7 +23,6 @@ SOFTWARE.
 =============================================================================*/
 
 #include "ESP32_SerialRMT.h"
-#include "private/RMT_version.h"
 
 uint8_t SerialRMT::txCount() {
    return QQQ_TX_CHANNELS;

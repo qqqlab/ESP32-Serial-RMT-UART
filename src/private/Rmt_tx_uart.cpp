@@ -88,7 +88,9 @@ IRAM_ATTR void Rmt_tx_uart::_tx_end_interrrupt_handler() {
   rmt_ll_tx_start(&RMT, channel);
 }
 
-bool Rmt_tx_uart::begin(uint32_t baud, uint32_t gpio_num, int channel) {
+bool Rmt_tx_uart::begin(uint32_t baud, int gpio_num, int channel) {
+  if(gpio_num < 0) return false;
+
   //setup RMT and get next free channel if channel<0
   if(!qqq_rmt_tx_setup(this, &channel)) return false;
 

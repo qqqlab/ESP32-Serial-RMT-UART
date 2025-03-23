@@ -30,6 +30,7 @@ SOFTWARE.
 #include <esp_attr.h> //IRAM_ATTR
 #include <esp_rom_gpio.h> //esp_rom_gpio_connect_out_signal
 #include <soc/rmt_periph.h> //rmt_periph_signals
+#include <driver/gpio.h> //gpio_get_level
 
 //=============================================================================
 //RMT-v1 / RMT-v2 device version specific
@@ -171,15 +172,12 @@ IRAM_ATTR void Rmt_rx_uart::rx_start() {
   mem_off = 0;
   rmt_ll_rx_set_mem_owner(&RMT, channel, RMT_LL_MEM_OWNER_HW); //Set RMT memory owner for RX channel
   rmt_ll_rx_reset_pointer(&RMT, channel); //Reset RMT reading pointer for RX channel
-  if (gpio_get_level((gpio_num_t)gpio_num)) {
-    decoder_state = 1; //gpio is high, so rx_decoder state is waiting for low start bit
-  }else{
-    decoder_state = 0; //gpio is low, so rx_decoder state is waiting for high level
-  }
   rmt_ll_rx_enable(&RMT, channel, true); //re-enable receiver. NOTE: currently ongoing pulse will be captured as first pulse
 }
 
-bool Rmt_rx_uart::begin(uint32_t baud, uint32_t gpio_num, int channel) {
+bool Rmt_rx_uart::begin(uint32_t baud, int gpio_num, int channel) {
+  if(gpio_num < 0) return false;
+
   //setup RMT and get next free channel if channel<0
   if(!qqq_rmt_rx_setup(this, &channel)) return false;
 
@@ -216,6 +214,13 @@ bool Rmt_rx_uart::begin(uint32_t baud, uint32_t gpio_num, int channel) {
 
   //pin setup - rmt_periph_signals follows datasheet numbering for ESP32S3 0-3=TX, 4-7=RX - so need offset from RMT_LL channel number
   esp_rom_gpio_connect_in_signal(gpio_num, rmt_periph_signals.groups[0].channels[channel + QQQ_RX_CHANNEL_LL_TO_DATASHEET_OFFSET].rx_sig, 0);
+
+  //set startup state depending on pin level
+  if (gpio_get_level((gpio_num_t)gpio_num)) {
+    decoder_state = 1; //gpio is high, so rx_decoder state is waiting for low start bit
+  }else{
+    decoder_state = 0; //gpio is low, so rx_decoder state is waiting for high level
+  }
 
   //start rx
   rx_start();

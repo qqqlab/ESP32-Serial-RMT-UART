@@ -28,7 +28,7 @@ SOFTWARE.
 
 class Rmt_tx_uart {
 public:
-  bool begin(uint32_t baud, uint32_t gpio_num, int channel = -1); //channel default -1 assigns next available channel
+  bool begin(uint32_t baud, int gpio_num, int channel = -1); //channel default -1 assigns next available channel
   size_t write(uint8_t *buffer, size_t size);
   
   //number of bytes that can be written to the transmitter buffer
